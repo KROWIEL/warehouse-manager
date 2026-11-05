@@ -1,0 +1,12 @@
+.git
+.github
+docs
+data
+.env
+**/.venv
+**/node_modules
+**/__pycache__
+**/dist
+*.md
+LICENSE
+CHANGELOG.md

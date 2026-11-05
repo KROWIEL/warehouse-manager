@@ -1,0 +1,21 @@
+# Локальный запуск без Caddy и HTTPS.
+# Использование:  docker compose -f docker-compose.local.yml up -d --build
+# Открыть:        http://localhost:8080
+#
+# Сканер штрихкодов здесь с телефона по локальному IP не заработает:
+# браузер даёт камеру только в защищённом контексте (https или localhost).
+services:
+  app:
+    build: .
+    image: warehouse-manager
+    container_name: warehouse-manager-local
+    env_file:
+      - .env
+    environment:
+      # по http браузер не отправит Secure-cookie
+      COOKIE_SECURE: "false"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped

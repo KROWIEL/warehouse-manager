@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t warehouse-manager .
+
+      - name: Backend self-checks
+        run: |
+          docker run --rm -v "$PWD/backend:/w" -w /w -e DATA_DIR=/tmp/wm warehouse-manager \
+            python selfcheck.py
+
+      - name: Smoke test
+        run: |
+          docker run -d --name app -p 8080:8080 \
+            -e COOKIE_SECURE=false \
+            -e SEED_USER1_USERNAME=ci -e SEED_USER1_PASSWORD='CiPass!1' \
+            -e SEED_USER1_NAME=CI \
+            warehouse-manager
+          for i in $(seq 1 40); do curl -fs http://localhost:8080/api/health && break; sleep 1; done
+          curl -fs http://localhost:8080/ | grep -qi "html"
+          curl -fs -X POST http://localhost:8080/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"username":"ci","password":"CiPass!1"}' | grep -q must_change_password

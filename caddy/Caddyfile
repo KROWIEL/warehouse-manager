@@ -1,0 +1,10 @@
+# Email для уведомлений Let's Encrypt.
+{
+	email {$ACME_EMAIL}
+}
+
+# Caddy сам получит и будет продлевать сертификат для домена из .env.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:8080
+}

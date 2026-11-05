@@ -1,0 +1,34 @@
+# Продакшен: приложение + Caddy с автоматическим HTTPS (Let's Encrypt).
+# Использование:  cp .env.example .env  →  docker compose up -d --build
+services:
+  app:
+    build: .
+    image: warehouse-manager
+    container_name: warehouse-manager
+    env_file:
+      - .env
+    volumes:
+      - ./data:/data
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: warehouse-manager-caddy
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

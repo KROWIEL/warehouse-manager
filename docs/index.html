@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Store Manager — учёт склада для небольшого магазина</title>
+  <meta name="description" content="Self-hosted склад: товары с настраиваемыми полями, продажи чеками, статистика и Excel. FastAPI + Svelte + Docker. Открытый код, MIT.">
+  <meta property="og:title" content="Store Manager — учёт склада">
+  <meta property="og:description" content="Каталог, остатки, продажи и Excel-отчёты в одном Docker-образе на вашем сервере.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --grad: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 55%, #6366f1 100%);
+      --bg: #070b14; --bg-2: #0c1220; --card: rgba(255,255,255,0.045); --border: rgba(255,255,255,0.09);
+      --text: #eef3fb; --dim: #93a4bd; --accent: #38bdf8; --pos: #22c55e;
+      --radius: 22px;
+      --font: "Segoe UI", system-ui, -apple-system, "Inter", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.6;
+      background-image:
+        radial-gradient(900px 500px at 10% -10%, rgba(14,165,233,0.28), transparent 60%),
+        radial-gradient(800px 500px at 100% 0%, rgba(99,102,241,0.22), transparent 60%);
+      background-repeat: no-repeat;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    header { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 20px; color: var(--text); }
+    .brand img { width: 38px; height: 38px; }
+    .brand b { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    nav a { color: var(--dim); margin-left: 22px; font-weight: 600; font-size: 15px; }
+    nav a:hover { color: var(--text); text-decoration: none; }
+
+    .hero { text-align: center; padding: 56px 0 40px; }
+    .pill {
+      display: inline-block; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      color: #7dd3fc; background: rgba(14,165,233,0.14); border: 1px solid rgba(14,165,233,0.35);
+    }
+    h1 { font-size: clamp(36px, 6vw, 58px); line-height: 1.08; letter-spacing: -1.5px; margin: 22px auto 18px; max-width: 860px; }
+    h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: 19px; color: var(--dim); max-width: 640px; margin: 0 auto 32px; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px; border-radius: 999px;
+      font-weight: 700; font-size: 15px; border: 1px solid var(--border); color: var(--text); background: var(--card);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover { text-decoration: none; transform: translateY(-2px); }
+    .btn.primary { background: var(--grad); border-color: transparent; box-shadow: 0 10px 30px rgba(14,165,233,0.35); color: #fff; }
+
+    section { padding: 72px 0 0; }
+    h2 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -0.8px; margin: 0 0 10px; text-align: center; }
+    .sub { color: var(--dim); text-align: center; margin: 0 auto 40px; max-width: 620px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+    .card .ico {
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 14px;
+      background: var(--grad); color: #fff; font-size: 20px; font-weight: 800;
+    }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .card p { margin: 0; color: var(--dim); font-size: 15px; }
+
+    .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    pre {
+      margin: 0; padding: 22px; border-radius: var(--radius); background: #05080f; border: 1px solid var(--border);
+      overflow-x: auto; font: 14px/1.7 "Cascadia Code", Consolas, ui-monospace, monospace; color: #e4e4f0;
+    }
+    pre .c { color: #6b7a95; }
+    .steps ol { margin: 0; padding-left: 22px; color: var(--dim); }
+    .steps li { margin-bottom: 12px; }
+    .steps li b { color: var(--text); }
+    code { font-family: "Cascadia Code", Consolas, ui-monospace, monospace; font-size: 0.92em;
+      background: rgba(255,255,255,0.07); padding: 2px 7px; border-radius: 7px; color: #bae6fd; }
+
+    .stack { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .stack span { padding: 9px 16px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
+
+    footer { margin-top: 90px; padding: 32px 0 48px; border-top: 1px solid var(--border); color: var(--dim); font-size: 14px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+    @media (max-width: 760px) {
+      nav a:not(.gh) { display: none; }
+      .steps { grid-template-columns: 1fr; }
+      .hero { padding-top: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#"><img src="favicon.svg" alt=""> Store <b>Manager</b></a>
+      <nav>
+        <a href="#features">Возможности</a>
+        <a href="#start">Установка</a>
+        <a class="gh" href="https://github.com/KROWIEL/warehouse-manager">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <span class="pill">Открытый код · MIT · self-hosted</span>
+      <h1>Учёт склада <span>для небольшого магазина</span> — на вашем сервере</h1>
+      <p class="lead">
+        Товары с настраиваемыми полями, поставщики, продажи чеками, статистика с Excel
+        и сканер штрихкодов на iPhone. Один Docker-образ, без чужого облака.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/KROWIEL/warehouse-manager">Открыть на GitHub</a>
+        <a class="btn" href="#start">Установить за 2 минуты</a>
+      </div>
+    </div>
+
+    <section id="features">
+      <h2>Что внутри</h2>
+      <p class="sub">Всё, что нужно небольшому магазину, без CRM на триста экранов.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="ico">1</div>
+          <h3>Каталог под ваш товар</h3>
+          <p>Категории, подкатегории и поля, которые вы сами задаёте: размер, цвет, надпись — или что угодно ещё.</p>
+        </div>
+        <div class="card">
+          <div class="ico">2</div>
+          <h3>Склад с историей</h3>
+          <p>Остаток считается из движений: приход, продажа, возврат, списание, инвентаризация. Ничего не теряется.</p>
+        </div>
+        <div class="card">
+          <div class="ico">3</div>
+          <h3>Продажи чеками</h3>
+          <p>Несколько позиций, скидка, оплата, клиент, торг по цене. Сканер штрихкодов работает и на iPhone.</p>
+        </div>
+        <div class="card">
+          <div class="ico">4</div>
+          <h3>Статистика и Excel</h3>
+          <p>Разрезы по поставщикам, категориям и полям товара. Экспорт на 15 листов с живыми графиками.</p>
+        </div>
+        <div class="card">
+          <div class="ico">5</div>
+          <h3>PWA на телефон</h3>
+          <p>Ставится на домашний экран. Нижняя навигация, тёмная и светлая тема.</p>
+        </div>
+        <div class="card">
+          <div class="ico">6</div>
+          <h3>Без регистрации</h3>
+          <p>Аккаунты из конфига. При первом входе — строгий пароль, до этого данные закрыты.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Стек</h2>
+      <p class="sub">Минимум зависимостей, один контейнер.</p>
+      <div class="stack">
+        <span>FastAPI</span><span>SQLite</span><span>Svelte 4</span><span>Vite</span>
+        <span>Docker</span><span>Caddy</span><span>PWA</span><span>openpyxl</span>
+      </div>
+    </section>
+
+    <section id="start">
+      <h2>Быстрый старт</h2>
+      <p class="sub">Локально за пару команд. На сервере — тот же образ плюс Caddy с HTTPS.</p>
+      <div class="steps">
+        <pre><span class="c"># клон и локальный запуск</span>
+git clone https://github.com/KROWIEL/warehouse-manager.git
+cd warehouse-manager
+cp .env.example .env
+docker compose -f docker-compose.local.yml up -d --build
+
+<span class="c"># открыть http://localhost:8080</span></pre>
+        <ol>
+          <li><b>Заполните `.env`</b> — логины и одноразовые пароли продавцов.</li>
+          <li><b>Войдите</b> — приложение потребует задать строгий пароль.</li>
+          <li><b>На сервере</b> укажите <code>DOMAIN</code> и <code>ACME_EMAIL</code>, затем <code>docker compose up -d --build</code>.</li>
+          <li><b>Сканер</b> проверяйте по HTTPS — по локальному IP камера не включится.</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      <span>MIT · © 2026 KROWIEL</span>
+      <span>
+        <a href="https://github.com/KROWIEL/warehouse-manager">GitHub</a> ·
+        <a href="https://github.com/KROWIEL/warehouse-manager/releases">Releases</a>
+      </span>
+    </footer>
+  </div>
+</body>
+</html>
