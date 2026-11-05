@@ -23,6 +23,21 @@ Cloud CRMs are often overkill for a small shop and keep your data elsewhere.
 Store Manager is a single Docker image on your server: catalog, stock, sales and
 Excel reports — no subscription, no third-party cloud.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/warehouse.png" width="48%" alt="Warehouse — product catalog">
+  <img src="docs/screenshots/sale.png" width="48%" alt="Sale — multi-item receipt">
+</p>
+<p align="center">
+  <img src="docs/screenshots/stats.png" width="48%" alt="Stats — revenue and charts">
+  <img src="docs/screenshots/settings.png" width="48%" alt="Settings — profile and categories">
+</p>
+<p align="center">
+  <img src="docs/screenshots/warehouse-dark.png" width="48%" alt="Warehouse — dark theme">
+  <img src="docs/screenshots/mobile.png" width="28%" alt="Warehouse on phone">
+</p>
+
 ## Features
 
 - Categories, subcategories, suppliers, and configurable product attributes

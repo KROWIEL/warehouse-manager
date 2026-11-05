@@ -82,12 +82,29 @@
     .stack { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .stack span { padding: 9px 16px; border-radius: 999px; background: var(--card); border: 1px solid var(--border); font-weight: 600; font-size: 14px; }
 
+    .shots {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .shots figure {
+      margin: 0; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .shots img { display: block; width: 100%; height: auto; }
+    .shots figcaption {
+      padding: 12px 16px; color: var(--dim); font-size: 14px; font-weight: 600;
+    }
+    .shots .mobile-wrap {
+      grid-column: 1 / -1; display: flex; justify-content: center;
+    }
+    .shots .mobile-wrap figure { max-width: 320px; width: 100%; }
+
     footer { margin-top: 90px; padding: 32px 0 48px; border-top: 1px solid var(--border); color: var(--dim); font-size: 14px;
       display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
     @media (max-width: 760px) {
       nav a:not(.gh) { display: none; }
       .steps { grid-template-columns: 1fr; }
+      .shots { grid-template-columns: 1fr; }
       .hero { padding-top: 30px; }
     }
   </style>
@@ -98,6 +115,7 @@
       <a class="brand" href="#"><img src="favicon.svg" alt=""> Store <b>Manager</b></a>
       <nav>
         <a href="#features">Возможности</a>
+        <a href="#shots">Скриншоты</a>
         <a href="#start">Установка</a>
         <a class="gh" href="https://github.com/KROWIEL/warehouse-manager">GitHub</a>
       </nav>
@@ -149,6 +167,39 @@
           <div class="ico">6</div>
           <h3>Без регистрации</h3>
           <p>Аккаунты из конфига. При первом входе — строгий пароль, до этого данные закрыты.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="shots">
+      <h2>Как выглядит</h2>
+      <p class="sub">Склад, продажа, статистика и настройки — светлая тема, тёмная и телефон.</p>
+      <div class="shots">
+        <figure>
+          <img src="screenshots/warehouse.png" alt="Склад — каталог товаров" loading="lazy">
+          <figcaption>Склад — каталог и остатки</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/sale.png" alt="Продажа — чек с позициями" loading="lazy">
+          <figcaption>Продажа — чек с несколькими позициями</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/stats.png" alt="Статистика — выручка и графики" loading="lazy">
+          <figcaption>Статистика — выручка и разрезы</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/settings.png" alt="Настройки — профиль и категории" loading="lazy">
+          <figcaption>Настройки — профиль, категории, поставщики</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/warehouse-dark.png" alt="Склад — тёмная тема" loading="lazy">
+          <figcaption>Тёмная тема</figcaption>
+        </figure>
+        <div class="mobile-wrap">
+          <figure>
+            <img src="screenshots/mobile.png" alt="Склад на телефоне" loading="lazy">
+            <figcaption>PWA на телефоне</figcaption>
+          </figure>
         </div>
       </div>
     </section>

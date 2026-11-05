@@ -27,6 +27,21 @@ Self-hosted веб-приложение: товары с настраиваем�
 хранят данные у третьих лиц. Store Manager — один Docker-образ на вашем сервере:
 каталог товаров, остатки, продажи и Excel-отчёт без подписки и без чужого облака.
 
+## Скриншоты
+
+<p align="center">
+  <img src="docs/screenshots/warehouse.png" width="48%" alt="Склад — каталог товаров">
+  <img src="docs/screenshots/sale.png" width="48%" alt="Продажа — чек с позициями">
+</p>
+<p align="center">
+  <img src="docs/screenshots/stats.png" width="48%" alt="Статистика — выручка и графики">
+  <img src="docs/screenshots/settings.png" width="48%" alt="Настройки — профиль и категории">
+</p>
+<p align="center">
+  <img src="docs/screenshots/warehouse-dark.png" width="48%" alt="Склад — тёмная тема">
+  <img src="docs/screenshots/mobile.png" width="28%" alt="Склад на телефоне">
+</p>
+
 ## Возможности
 
 **Каталог и склад**
